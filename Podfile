@@ -10,6 +10,7 @@ target 'iina' do
   pod 'GzipSwift'
   pod 'GRMustache.swift', :git => 'https://github.com/iina/GRMustache.swift'
   pod 'Sparkle'
+  pod 'lua4swift', :git => "https://github.com/weyhan/lua4swift"
 
 #  target 'iinaTests' do
 #    inherit! :search_paths

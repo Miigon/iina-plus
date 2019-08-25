@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import Lua
 
 fileprivate extension NSUserInterfaceItemIdentifier {
   static let openFile = NSUserInterfaceItemIdentifier("openFile")

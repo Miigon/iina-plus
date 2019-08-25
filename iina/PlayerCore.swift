@@ -237,6 +237,9 @@ class PlayerCore: NSObject {
 
   private func openMainWindow(path: String, url: URL, isNetwork: Bool) {
     Logger.log("Opening \(path) in main window", subsystem: subsystem)
+    /* iina-plus codes*/
+    PluginCore.shared.cb_player_openWindow(path)
+    /* iina-plus end*/
     info.currentURL = url
     // clear currentFolder since playlist is cleared, so need to auto-load again in playerCore#fileStarted
     info.currentFolder = nil

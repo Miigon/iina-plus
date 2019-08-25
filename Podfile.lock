@@ -2,6 +2,7 @@ PODS:
   - GRMustache.swift (2.0.0)
   - GzipSwift (5.0.0)
   - Just (0.7.1)
+  - lua4swift (1.0.0)
   - PromiseKit (6.8.4):
     - PromiseKit/CorePromise (= 6.8.4)
     - PromiseKit/Foundation (= 6.8.4)
@@ -15,6 +16,7 @@ DEPENDENCIES:
   - GRMustache.swift (from `https://github.com/iina/GRMustache.swift`)
   - GzipSwift
   - Just (from `https://github.com/iina/Just`, branch `swift-5`)
+  - lua4swift (from `https://github.com/weyhan/lua4swift`)
   - PromiseKit
   - Sparkle
 
@@ -30,6 +32,8 @@ EXTERNAL SOURCES:
   Just:
     :branch: swift-5
     :git: https://github.com/iina/Just
+  lua4swift:
+    :git: https://github.com/weyhan/lua4swift
 
 CHECKOUT OPTIONS:
   GRMustache.swift:
@@ -38,14 +42,18 @@ CHECKOUT OPTIONS:
   Just:
     :commit: d0ae3f9bc2d6bf247b19217764a096bbac55f007
     :git: https://github.com/iina/Just
+  lua4swift:
+    :commit: d965cb3155aa833300b2cf8559accac5372b79ee
+    :git: https://github.com/weyhan/lua4swift
 
 SPEC CHECKSUMS:
   GRMustache.swift: 53405b02c374520f9193cf41bfa677f03a6d70aa
   GzipSwift: 5592f4d62b641e04d06443ba471f8ed76b1363e4
   Just: 60c0995e04718eb621a07abef45ce6883c562f2b
+  lua4swift: 04dfe51a7366de8ce3529128c19b161d1a39c3c4
   PromiseKit: 51794a832647e7b819336dc2279039ce9f1cc49b
   Sparkle: 3f75576db8b0265adef36c43249d747f22d0b708
 
-PODFILE CHECKSUM: 4969f0d73fe5d871a1a1853ad7807a345443e71a
+PODFILE CHECKSUM: 29cbee6ad69aca901b084a889995298be2c5dd16
 
-COCOAPODS: 1.7.1
+COCOAPODS: 1.6.0

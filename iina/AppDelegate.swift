@@ -215,6 +215,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     NSRunningApplication.current.activate(options: [.activateIgnoringOtherApps, .activateAllWindows])
 
     NSApplication.shared.servicesProvider = self
+    /* iina-plus codes */
+    Logger.log("Initializing PluginCore (iina-plus)")
+    PluginCore.shared.initPluginCore()
+    /* iina-plus end*/
   }
 
   /** Show welcome window if `application(_:openFile:)` wasn't called, i.e. launched normally. */

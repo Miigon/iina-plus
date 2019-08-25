@@ -248,6 +248,7 @@
 		8F49C36E213EFB7E0076C4F9 /* MiniPlayerWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8F49C370213EFB7E0076C4F9 /* MiniPlayerWindowController.xib */; };
 		9E47DAC01E3CFA6D00457420 /* DurationDisplayTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E47DABF1E3CFA6D00457420 /* DurationDisplayTextField.swift */; };
 		C789872F1E34EF170005769F /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = C78987311E34EF170005769F /* InfoPlist.strings */; };
+		D4F280052312D41500D72D17 /* PluginCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F280042312D41500D72D17 /* PluginCore.swift */; };
 		E301EFDA21312AB300BC8588 /* KeychainAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = E301EFD921312AB300BC8588 /* KeychainAccess.swift */; };
 		E322A4F820A8442E00C67D32 /* PlaylistPlaybackProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E322A4F720A8442E00C67D32 /* PlaylistPlaybackProgressView.swift */; };
 		E33836852026223800ABC812 /* PrefOSCToolbarSettingsSheetController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E33836832026223800ABC812 /* PrefOSCToolbarSettingsSheetController.swift */; };
@@ -1178,6 +1179,7 @@
 		D27E35E01E379B700064BE57 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		D2B411421E5336AD002819E1 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/KeyBinding.strings"; sourceTree = "<group>"; };
 		D2B411431E5336AE002819E1 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		D4F280042312D41500D72D17 /* PluginCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginCore.swift; sourceTree = "<group>"; };
 		E1298BB121A517C300B646AD /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/MainMenu.strings; sourceTree = "<group>"; };
 		E1298BB221A517C300B646AD /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/MainWindowController.strings; sourceTree = "<group>"; };
 		E1298BB321A517C300B646AD /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/QuickSettingViewController.strings; sourceTree = "<group>"; };
@@ -1675,6 +1677,7 @@
 				84FBCB371EEACDDD0076C77C /* FFmpegController.m */,
 				842904E11F0EC01600478376 /* AutoFileMatcher.swift */,
 				846121BC1F35FCA500ABB39C /* DraggingDetect.swift */,
+				D4F280042312D41500D72D17 /* PluginCore.swift */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -2281,6 +2284,7 @@
 				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
 				"${PODS_ROOT}/Sparkle/Sparkle.framework",
 				"${PODS_ROOT}/Sparkle/Sparkle.framework.dSYM",
+				"${BUILT_PRODUCTS_DIR}/lua4swift/Lua.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -2290,6 +2294,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Sparkle.framework",
 				"${DWARF_DSYM_FOLDER_PATH}/Sparkle.framework.dSYM",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Lua.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -2443,6 +2448,7 @@
 				84A0BA991D2FAAA700BC8DA1 /* MPVController.swift in Sources */,
 				847557161F406D360006B0FF /* MiniPlayerWindowMenuActions.swift in Sources */,
 				842F55A51EA17E7E0081D475 /* IINACommand.swift in Sources */,
+				D4F280052312D41500D72D17 /* PluginCore.swift in Sources */,
 				8434BAAD1D5E4546003BECF2 /* SlideUpButton.swift in Sources */,
 				840D47981DFEEE6A000D9A64 /* KeyMapping.swift in Sources */,
 				84BEEC3F1DFEDE2F00F945CA /* PrefKeyBindingViewController.swift in Sources */,
