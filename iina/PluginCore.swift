@@ -20,6 +20,7 @@ class PluginCore{
   var listenners = [String: [Lua.Function]]()
   init() {
     listenners["player.openWindow"] = Array()
+    listenners["player.togglePause"] = Array()
   }
   
   func initPluginCore() { // `applicationDidFinishLaunching()` in AppDelegate
@@ -29,8 +30,35 @@ class PluginCore{
     
   }
   
-  private func initializeLuaVM(_ luavm: Lua.VirtualMachine){
+  // initialize luavm and load all iina apis.
+  private func initializeLuaVM(_ luavm: Lua.VirtualMachine) {
     let iina = luavm.createTable()
+    
+    // Show an OSD message on currently active PlayerCore
+    let showOSD = luavm.createTable()
+    showOSD["normal"] = luavm.createFunction([String.arg]) { args in
+      let (text) = (args.string)
+      PlayerCore.lastActive.sendOSD(.general(text))
+      return .nothing
+    }
+    showOSD["withSubtext"] = luavm.createFunction([String.arg, String.arg]) { args in
+      let (text, subtext) = (args.string, args.string)
+      PlayerCore.lastActive.sendOSD(.generalWithSubtext(text, subtext))
+      return .nothing
+    }
+    showOSD["withProgress"] = luavm.createFunction([String.arg, String.arg]) { args in
+      let (text, progress) = (args.string, args.double)
+      PlayerCore.lastActive.sendOSD(.generalWithProgress(text, progress))
+      return .nothing
+    }
+    iina["showOSD"] = showOSD
+    
+    // Logger.log
+    iina["log"] = luavm.createFunction([String.arg]) { args in
+      let (message) = (args.string)
+      Logger.log(message, subsystem: PluginCore.subsystem)
+      return .nothing
+    }
     
     // Show an alert box
     iina["alert"] = luavm.createFunction([String.arg]) { args in
@@ -43,11 +71,12 @@ class PluginCore{
     iina["listen"] = luavm.createFunction([String.arg, Function.arg]) { args in
       let (event,callback) = (args.string, args.function)
       if let callbackList = self.listenners[event] {
-        Logger.log("a listenner is being attached for " + event,subsystem: PluginCore.subsystem)
+        Logger.log("a listenner is being attached for " + event, subsystem: PluginCore.subsystem)
         self.listenners[event]!.append(callback)
         return .value(callbackList.count)
       } else {
         // Invaild event type
+        Logger.log("failed to attach listenner: " + event, subsystem: PluginCore.subsystem)
         return .value(-1)
       }
     }
@@ -63,7 +92,7 @@ class PluginCore{
     // runtime state
     var luavm: Lua.VirtualMachine
     
-    init(identifier: String, vmspace: String, luavm: Lua.VirtualMachine){
+    init(identifier: String, vmspace: String, luavm: Lua.VirtualMachine) {
       self.identifier = identifier
       self.vmspace = vmspace
       self.luavm = luavm
@@ -96,20 +125,41 @@ class PluginCore{
   
   /* MARK: - Event Callback */
 
-  func dispatchEvent(_ event: String,_ dispatcher: (_ callback: Lua.Function) -> Void)
-  {
+  func dispatchEvent(_ event: String,_ dispatcher: (_ callback: Lua.Function) -> Bool) -> Bool {
+    var ret = true
     if let callbackList = listenners[event] {
       for callback in callbackList {
-        dispatcher(callback)
+        if dispatcher(callback) == false {
+          ret = false
+        }
       }
+    }
+    return ret
+  }
+  
+  func dispatchEvent(_ event: String) -> Bool { // with default dispatcher
+    return dispatchEvent(event) { (callback) -> Bool in
+      let result = callback.call([])
+      // TODO: properly handle return value
+      return false
     }
   }
   
-  func cb_player_openWindow(_ url: String){ // `openMainWindow()` in PlayerCore, at the beginning, right after `Logger.log()`
-    Logger.log("dispatching event: player.openWindow", subsystem: PluginCore.subsystem)
-    dispatchEvent("player.openWindow") { (callback) in
-      let _ = callback.call([url])
+  func dispatchEvent(_ event: String,_ args: [Lua.Value]) -> Bool { // with arguments
+    return dispatchEvent(event) { (callback) -> Bool in
+      _ = callback.call(args)
+      return false
     }
+  }
+  
+  func cb_player_openWindow(_ url: String) { // `openMainWindow()` in PlayerCore, at the beginning, right after `Logger.log()`
+    Logger.log("dispatching event: player.openWindow", subsystem: PluginCore.subsystem)
+    dispatchEvent("player.openWindow",[url])
+  }
+  
+  func cb_player_togglePause(_ paused: Bool) -> Bool {
+    Logger.log("dispatching event: player.togglePause", subsystem: PluginCore.subsystem)
+    return dispatchEvent("player.togglePause",[paused])
   }
   
 }

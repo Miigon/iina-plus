@@ -441,6 +441,7 @@ class PlayerCore: NSObject {
 
   /** Pause / resume. Reset speed to 0 when pause. */
   func togglePause(_ set: Bool?) {
+    var isPaused: Bool
     if let setPause = set {
       // if paused by EOF, replay the video.
       if !setPause {
@@ -448,17 +449,20 @@ class PlayerCore: NSObject {
           seek(absoluteSecond: 0)
         }
       }
-      mpv.setFlag(MPVOption.PlaybackControl.pause, setPause)
+      isPaused = setPause // iina-plus codes
     } else {
       if (info.isPaused) {
         if mpv.getFlag(MPVProperty.eofReached) {
           seek(absoluteSecond: 0)
         }
-        mpv.setFlag(MPVOption.PlaybackControl.pause, false)
-      } else {
-        mpv.setFlag(MPVOption.PlaybackControl.pause, true)
       }
+      isPaused = !info.isPaused // iina-plus codes
     }
+    /* iina-plus codes */
+    isPaused = PluginCore.shared.cb_player_togglePause(isPaused)
+    mpv.setFlag(MPVOption.PlaybackControl.pause, isPaused)
+    
+    /* iina-plus end*/
   }
 
   func stop() {

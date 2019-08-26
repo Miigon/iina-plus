@@ -70,7 +70,11 @@ enum OSDMessage {
   case fileError
   case networkError
   case canceled
-
+  /* iina-plus code */
+  case general(String)
+  case generalWithSubtext(String,String)
+  case generalWithProgress(String,Double)
+  /* iina-plus end */
 
   func message() -> (String, OSDType) {
     switch self {
@@ -297,6 +301,23 @@ enum OSDMessage {
         NSLocalizedString("osd.canceled", comment: "Canceled"),
         .normal
       )
+    /* iina-plus codes */
+    case .general(let text):
+      return (
+        text,
+        .normal
+      )
+    case .generalWithSubtext(let text,let subtext):
+      return (
+        text,
+        .withText(subtext)
+      )
+    case .generalWithProgress(let text,let progress):
+      return (
+        text,
+        .withProgress(progress)
+      )
+    /* iina-plus end */
     }
   }
 }
