@@ -25,8 +25,8 @@ class PluginCore{
   func initPluginCore() { // `applicationDidFinishLaunching()` in AppDelegate
     // Temporary code to test the plugin system
     let testplugin = loadPlugin(identifier: "miigon.testplugin")
-    let _ = testplugin.luavm.eval("iina.alert(\"Welcome!\\n\\nThis is a test plugin for IINA Plus.\\nAn unofficial version of IINA that allows home-made plugins to run.\\n\\nAfter this alert, a listenner listening for `player.openWindow` event will be attached.\")")
-    let _ = testplugin.luavm.eval("function cb(url) iina.alert('testplugin: a window with following file is being opened ;)\\n\\n'..url) end;iina.listen('player.openWindow',cb)")
+    _ = testplugin.luavm.eval(URL(fileURLWithPath: NSHomeDirectory() + "/.iina-plus/plugins/testplugin.lua"))
+    
   }
   
   private func initializeLuaVM(_ luavm: Lua.VirtualMachine){
