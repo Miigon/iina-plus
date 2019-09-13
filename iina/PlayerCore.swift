@@ -1314,6 +1314,7 @@ class PlayerCore: NSObject {
   }
 
   func sendOSD(_ osd: OSDMessage, autoHide: Bool = true, accessoryView: NSView? = nil) {
+    if PluginCore.shared.cb_player_sendOSD(osd, autoHide) == false {return;}
     // querying `mainWindow.isWindowLoaded` will initialize mainWindow unexpectly
     guard mainWindow.isWindowLoaded && Preference.bool(for: .enableOSD) else { return }
     if info.disableOSDForFileLoading {

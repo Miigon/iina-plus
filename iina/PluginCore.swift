@@ -16,18 +16,29 @@ class PluginCore{
   var pluginLoaded = [String: Plugin]()
   var vmspaces = [String: Lua.VirtualMachine]()
   
+  struct CallbackListenner {
+    unowned var vmspace: Lua.VirtualMachine
+    var function: Lua.Function
+  }
   // event: callbackList
-  var listenners = [String: [Lua.Function]]()
+  var listenners = [String: [CallbackListenner]]()
   init() {
     listenners["player.openWindow"] = Array()
     listenners["player.togglePause"] = Array()
+    listenners["player.sendOSD"] = Array()
+  }
+  
+  struct EventResult {
+    static let error = "error"
+    static let interrupt = "interrupt"
+    static let pass = "pass"
+    static let nothing = "nothing"
   }
   
   func initPluginCore() { // `applicationDidFinishLaunching()` in AppDelegate
     // Temporary code to test the plugin system
     let testplugin = loadPlugin(identifier: "miigon.testplugin")
     _ = testplugin.luavm.eval(URL(fileURLWithPath: NSHomeDirectory() + "/.iina-plus/plugins/testplugin.lua"))
-    
   }
   
   // initialize luavm and load all iina apis.
@@ -72,7 +83,7 @@ class PluginCore{
       let (event,callback) = (args.string, args.function)
       if let callbackList = self.listenners[event] {
         Logger.log("a listenner is being attached for " + event, subsystem: PluginCore.subsystem)
-        self.listenners[event]!.append(callback)
+        self.listenners[event]!.append(CallbackListenner(vmspace: luavm,function: callback))
         return .value(callbackList.count)
       } else {
         // Invaild event type
@@ -123,44 +134,62 @@ class PluginCore{
     return plugin
   }
   
+  func handleError(_ errMessage: String) {
+    
+  }
+  
   /* MARK: - Event Callback */
-
-  func dispatchEvent(_ event: String,_ dispatcher: (_ callback: Lua.Function) -> Bool) -> Bool {
-    var ret = true
+  
+  func dispatchEvent(_ event: String,_ dispatcher: (_ callback: Lua.Function) -> [Lua.Value]) -> [Lua.Value] {
     if let callbackList = listenners[event] {
       for callback in callbackList {
-        if dispatcher(callback) == false {
-          ret = false
+        let returnValues = dispatcher(callback.function)
+        if returnValues.count >= 1 && returnValues[0].kind() == .string {
+          let eventResult = returnValues[0] as! String
+          switch eventResult {
+          case EventResult.pass:
+            continue
+          case EventResult.interrupt:
+            return returnValues
+          case EventResult.error:
+            Utility.showAlert(message: "Plugin Lua Error:\n\n" + (returnValues[1] as! String), alertStyle: .informational)
+            return returnValues
+          default:
+            continue
+          }
         }
       }
     }
-    return ret
+    return [EventResult.nothing]
   }
   
-  func dispatchEvent(_ event: String) -> Bool { // with default dispatcher
-    return dispatchEvent(event) { (callback) -> Bool in
-      let result = callback.call([])
-      // TODO: properly handle return value
-      return false
-    }
-  }
-  
-  func dispatchEvent(_ event: String,_ args: [Lua.Value]) -> Bool { // with arguments
-    return dispatchEvent(event) { (callback) -> Bool in
-      _ = callback.call(args)
-      return false
+  func dispatchEvent(_ event: String,_ args: [Lua.Value] = []) -> [Lua.Value] { // with default dispatcher
+    return dispatchEvent(event) { (callback: Lua.Function) -> [Lua.Value] in
+      let result = callback.call(args)
+      switch result {
+      case .values(let values):
+        return values
+      case .error(let errMessage):
+        return [EventResult.error,errMessage]
+      }
     }
   }
   
   func cb_player_openWindow(_ url: String) { // `openMainWindow()` in PlayerCore, at the beginning, right after `Logger.log()`
     Logger.log("dispatching event: player.openWindow", subsystem: PluginCore.subsystem)
-    dispatchEvent("player.openWindow",[url])
+    _ = dispatchEvent("player.openWindow",[url])
   }
   
   func cb_player_togglePause(_ paused: Bool) -> Bool {
     Logger.log("dispatching event: player.togglePause", subsystem: PluginCore.subsystem)
-    return dispatchEvent("player.togglePause",[paused])
+    let ret = dispatchEvent("player.togglePause",[paused])
+    return (ret.count >= 2 && ret[1].kind() == .boolean) ? (ret[1] as! Bool) : paused
   }
   
+  func cb_player_sendOSD(_ osd: OSDMessage,_ autoHide: Bool) -> Bool {
+    Logger.log("dispatching event: player.sendOSD", subsystem: PluginCore.subsystem)
+    let ret = dispatchEvent("player.sendOSD",[osd.message().0]) // TODO: translate OSDMessage into lua structure.
+    return (ret.count >= 2 && ret[1].kind() == .boolean) ? (ret[1] as! Bool) : true
+  }
 }
 

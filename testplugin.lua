@@ -8,26 +8,26 @@ After this alert, a listenner listening for `player.openWindow` event will be at
 LUA_VERSION:]].._VERSION
 )
 
-function cb(url)
+iina.listen('player.openWindow',function(url)
     iina.alert('testplugin: a window with following file is being opened ;)\n\n'..url)
-end
+end)
 
-
-function listen_and_alert_when_triggered(event)
-    local function universal_cb(...)
-        local arg = {...}
-        local argstring = {}
-        for i=1,#arg do
-            argstring[i] = tostring(arg[i]) or ("["..type(arg[i]).."]")
-        end
-        iina.alert(event.."("..table.concat(argstring,",")..")")
+local try = 5
+iina.listen('player.togglePause',function(paused)
+    if paused == false then return "pass" end -- We don't care about user resuming the video.
+    if try == 0 then
+        iina.showOSD.withSubtext("You DID it!","congratulations!")
+        try = 5
+        return "interrupt",true
+    else
+        iina.showOSD.withSubtext("Hello,there!","Try ".. tostring(try) .." more times to pause the video")
+        try = try - 1
     end
-    iina.listen(event,universal_cb)
-end
+    return "interrupt",false
+end)
 
-iina.listen('player.openWindow',cb)
---listen_and_alert_when_triggered('player.togglePause')
-iina.listen('player.togglePause',function()
-    iina.showOSD.withSubtext("Hello,there!","pausing is forbidden!")
-    return false
+iina.listen('player.sendOSD',function(msg)
+    if msg == "继续" or msg == "暂停" then -- Disable `pause` and `resume` osd messages
+        return "interrupt",false
+    end
 end)
